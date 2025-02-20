@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .weather-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        .weather-info div {
+            margin: 12px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #6a11cb;
+        }
+        button {
+            width: 100%;
+            height: 2rem;
+            padding: 12px;
+            font-size: 16px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="weather-container">
+    <h1 class="text-4xl font-bold mb-6 text-gray-800">Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name" class="mb-6">
+
+    <button type="button" onclick="getWeather()">Get Weather</button>
+
+    <div class="weather-info mt-6" id="weatherInfo"></div>
+</div>
+
+<script>
+    // Replace with your OpenWeatherMap API key
+    const apiKey = 'c95a5d6599b0532cdaeb273a86939b8a'; 
+
+    // Function to fetch weather data
+    function getWeather() {
+        const city = document.getElementById('cityInput').value;
+        const weatherInfo = document.getElementById('weatherInfo');
+
+        if (!city) {
+            weatherInfo.innerHTML = `<p class="text-red-500">Please enter a city name.</p>`;
+            return;
+        }
+
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+        // Fetch weather data
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.cod === "404") {
+                    weatherInfo.innerHTML = `<p class="text-red-500">City not found. Please try again.</p>`;
+                } else {
+                    const temperature = data.main.temp;
+                    const description = data.weather[0].description;
+                    const humidity = data.main.humidity;
+                    const windSpeed = data.wind.speed;
+
+                    weatherInfo.innerHTML = `
+                        <div><strong>Temperature:</strong> ${temperature}°C</div>
+                        <div><strong>Condition:</strong> ${description}</div>
+                        <div><strong>Humidity:</strong> ${humidity}%</div>
+                        <div><strong>Wind Speed:</strong> ${windSpeed} m/s</div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching weather data:', error);
+                weatherInfo.innerHTML = `<p class="text-red-500">Failed to retrieve weather data. Please try again later.</p>`;
+            });
+    }
+</script>
+
+</body>
+</html>
